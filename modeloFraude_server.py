@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
 from pgmpy.inference import VariableElimination
+import os
 
 # Cargar el modelo
 with open('modelo_bayesiano_credit_risk.pkl', 'rb') as f:
@@ -24,7 +25,7 @@ def predict():
     def predecir_probabilidad(row):
         evidence = {k: row[k] for k in features if pd.notnull(row[k])}
         probas = inference.query(variables=['credit_risk_score'], evidence=evidence, show_progress=False)
-        return probas['credit_risk_score'].values  
+        return probas.values[1]  # <<< ESTA ES LA LÍNEA CORREGIDA
     
     y_probs = new_data.apply(predecir_probabilidad, axis=1).values[0]
     
@@ -54,9 +55,6 @@ def recomendar_credito(y_probs, ingreso):
 
     return credito_recomendado
 
-import os
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host="0.0.0.0", port=port)
-
