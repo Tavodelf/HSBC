@@ -23,7 +23,7 @@ def predict():
     
     def predecir_probabilidad(row):
         evidence = {k: row[k] for k in features if pd.notnull(row[k])}
-        probas = inference.predict_probability(evidence=evidence, show_progress=False)
+        probas = inference.query(variables=['credit_risk_score'], evidence=evidence, show_progress=False)
         return probas['credit_risk_score'].values  
     
     y_probs = new_data.apply(predecir_probabilidad, axis=1).values[0]
